@@ -121,7 +121,6 @@ export default async function use(url, baseUrl, options) {
 
     url = url.toString();
 
-    console.log("has", map.has(url));
     if (map.has(url)) {
         return await map.get(url);
     }
@@ -130,9 +129,9 @@ export default async function use(url, baseUrl, options) {
         const promise = loadModule(url, options.default);
         map.set(url, promise);
         return await promise;
-    } catch {
-        console.log("deleting");
+    } catch (e) {
         map.delete(url);
+        throw e;
     }
 }
 
