@@ -20,7 +20,7 @@ import use from "./use-module.js";
 
 ## Usage
 
-And then you can import any other module using `use()`, like this:
+After adding use-module to your project, you can import any other module using the `use()` function, like this:
 
 ```javascript
 // Loads entire module or default export, if present, from ./module.js
