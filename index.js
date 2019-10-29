@@ -170,3 +170,10 @@ class UseModuleElement extends HTMLElement {
 }
 
 customElements.define("use-module", UseModuleElement);
+
+for (let script of document.scripts) {
+    if (script.src === import.meta.url) {
+        window.use = use;
+        break;
+    }
+}
