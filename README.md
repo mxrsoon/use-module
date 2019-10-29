@@ -4,19 +4,21 @@
 This module enables you to import JS (ES6), CSS and HTML modules on almost any browser that supports ES6 modules.
 
 ## Setup
-To add use-module to your project, just download `index.js` from the [releases](https://github.com/wazybr/use-module/releases) page, and place it in your project's folder.
+To add use-module to your project, just download `use-module.js` from the [releases](https://github.com/wazybr/use-module/releases) page, and place it in your project's folder.
 
-## Usage
+After that, import it as a normal ES6 module in your HTML:
 
-Import this `index.js` as a normal ES6 module in your HTML:
 ```html
-<script type="module" src="./use-module/index.js">
+<script type="module" src="./use-module.js">
 ```
 
 or in your ES6 module:
+
 ```javascript
-import use from "./use-module/index.js";
+import use from "./use-module.js";
 ```
+
+## Usage
 
 And then you can import any other module using `use()`, like this:
 
