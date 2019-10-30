@@ -53,7 +53,7 @@ const module = await use("./module.js", import.meta.url);
 For a syntax better suited to your needs, you can call `use()` in two ways. Here's a breakdown of those signatures:
 
 ### `use(url[, baseUrl, options])`
-- `url` *String or URL*: he URL of the desired module to load.
+- `url` *String or URL*: the URL of the desired module to load.
 - `baseUrl` *String or URL (optional)*: the base URL for resolving relative paths. Defaults to `document.baseURI`.
 - `options` *Object (optional)*
 	- `default` *Boolean*: whether or not to directly return the module's default export if present instead of the entire module. Defaults to `true`.
@@ -61,7 +61,7 @@ For a syntax better suited to your needs, you can call `use()` in two ways. Here
 Returns a `Promise` that resolves to the imported module or to it's default export, depending on `options.default`.
 
 ### `use(url, options)`
-- `url` *String or URL*: he URL of the desired module to load.
+- `url` *String or URL*: the URL of the desired module to load.
 - `options` *Object (optional)*
 	- `base` *String or URL (optional)*: the base URL for resolving relative paths. Defaults to `document.baseURI`.
 	- `default` *Boolean*: whether or not to directly return the module's default export if present instead of the entire module. Defaults to `true`.
