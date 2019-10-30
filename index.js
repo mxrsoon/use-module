@@ -1,4 +1,5 @@
 const map = new Map();
+const urlAttributes = ["src", "href"];
 
 const importsRegex = {
     static: new RegExp(/import(?:["'\s]*(?:[\w*${}\n\r\t, ]+)from\s*)?["'\s]["'\s](?<import>.*[@\w_-]+)["'\s]/, "g"),
@@ -14,6 +15,41 @@ async function tryFetch(url) {
 function replaceNextString(str, oldStr, newStr, start = 0) {
     const idx = str.indexOf(oldStr, start);
     return str.substring(0, idx) + newStr + str.substring(idx + oldStr.length);
+}
+
+function resolveHTMLUrls(doc, baseUrl) {
+    for (let attr of urlAttributes) {
+        for (let el of doc.querySelectorAll(`[${attr}]`)) {
+            let url = el.getAttribute(attr);
+            
+            try {
+                if (url) {
+                    url = new URL(url, baseUrl);
+                    el.setAttribute(attr, url.toString());
+                }
+            } catch (e) { }
+        }
+    }
+
+    for (let template of doc.querySelectorAll("template")) {
+        resolveHTMLUrls(template.content, baseUrl);
+    }
+}
+
+function resolveJSUrls(js, baseUrl) {
+    let match;
+    
+    for (let type in importsRegex) {
+        match = importsRegex[type].exec(js);
+
+        while (match) {
+            const newUrl = new URL(match.groups.import, baseUrl);
+            js = replaceNextString(js, match.groups.import, newUrl.toString(), match.index);
+            match = importsRegex[type].exec(js);
+        }
+    }
+
+    return js;
 }
 
 async function loadCSSModule(url, def) {
@@ -48,21 +84,7 @@ async function loadInlineJSModule(script, doc, url) {
     window._tempDocs.set(encodedUrl, doc);
     
     let moduleJS = script.innerText;
-    let match = importsRegex.static.exec(moduleJS);
-
-    while (match) {
-        const newUrl = new URL(match.groups.import, url);
-        moduleJS = replaceNextString(moduleJS, match.groups.import, newUrl.toString(), match.index);
-        match = importsRegex.static.exec(moduleJS);
-    }
-
-    match = importsRegex.dynamic.exec(moduleJS);
-
-    while (match) {
-        const url = new URL(match.groups.import, url);
-        moduleJS = replaceNextString(moduleJS, match.groups.import, url.toString(), match.index);
-        match = importsRegex.dynamic.exec(moduleJS);
-    }
+    moduleJS = resolveJSUrls(moduleJS, url);
 
     const js = `import.meta.document = window._tempDocs.get("${encodedUrl}");
                 import.meta.url = decodeURI("${encodedUrl}");
@@ -84,6 +106,12 @@ async function loadHTMLModule(url, def) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
     const exports = { };
+
+    resolveHTMLUrls(doc, url);
+
+    const base = document.createElement("base");
+    base.href = url;
+    doc.head.appendChild(base);
 
     // TODO: check for scripts (only module types)
     for (let script of doc.querySelectorAll("script")) {

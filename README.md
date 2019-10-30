@@ -58,7 +58,7 @@ For a syntax better suited to your needs, you can call `use()` in two ways. Here
 - `options` *Object (optional)*
 	- `default` *Boolean*: whether or not to directly return the module's default export if present instead of the entire module. Defaults to `true`.
 
-Returns a `Promise` that resolves to the imported module or to it's default export, depending `options.default`.
+Returns a `Promise` that resolves to the imported module or to it's default export, depending on `options.default`.
 
 ### `use(url, options)`
 - `url` *String or URL*: he URL of the desired module to load.
@@ -66,7 +66,7 @@ Returns a `Promise` that resolves to the imported module or to it's default expo
 	- `base` *String or URL (optional)*: the base URL for resolving relative paths. Defaults to `document.baseURI`.
 	- `default` *Boolean*: whether or not to directly return the module's default export if present instead of the entire module. Defaults to `true`.
 
-Returns a `Promise` that resolves to the imported module or to it's default export, depending `options.default`.
+Returns a `Promise` that resolves to the imported module or to it's default export, depending on `options.default`.
 
 ## Importing with HTML tag
 
