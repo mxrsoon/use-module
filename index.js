@@ -1,9 +1,19 @@
 const map = new Map();
 
+const importsRegex = {
+    static: new RegExp(/import(?:["'\s]*(?:[\w*${}\n\r\t, ]+)from\s*)?["'\s]["'\s](?<import>.*[@\w_-]+)["'\s]/, "g"),
+    dynamic: new RegExp(/import\((?:["'\s]*(?:[\w*{}\n\r\t, ]+)\s*)?["'\s](?<import>.*(?:[@\w_-]+))["'\s].*\)/, 'g')
+};
+
 async function tryFetch(url) {
     const res = await fetch(url, { method: "GET" });
     if (!res.ok) throw new Error(`Failed to fetch module: ${res.status}`);
     return res;
+}
+
+function replaceNextString(str, oldStr, newStr, start = 0) {
+    const idx = str.indexOf(oldStr, start);
+    return str.substring(0, idx) + newStr + str.substring(idx + oldStr.length);
 }
 
 async function loadCSSModule(url, def) {
@@ -36,10 +46,27 @@ async function loadInlineJSModule(script, doc, url) {
 
     const encodedUrl = encodeURI(url.toString());
     window._tempDocs.set(encodedUrl, doc);
+    
+    let moduleJS = script.innerText;
+    let match = importsRegex.static.exec(moduleJS);
+
+    while (match) {
+        const newUrl = new URL(match.groups.import, url);
+        moduleJS = replaceNextString(moduleJS, match.groups.import, newUrl.toString(), match.index);
+        match = importsRegex.static.exec(moduleJS);
+    }
+
+    match = importsRegex.dynamic.exec(moduleJS);
+
+    while (match) {
+        const url = new URL(match.groups.import, url);
+        moduleJS = replaceNextString(moduleJS, match.groups.import, url.toString(), match.index);
+        match = importsRegex.dynamic.exec(moduleJS);
+    }
 
     const js = `import.meta.document = window._tempDocs.get("${encodedUrl}");
                 import.meta.url = decodeURI("${encodedUrl}");
-                ${script.innerText}`;
+                ${moduleJS}`;
 
     const b64 = "data:text/javascript;base64," + btoa(js);
     const exports = await import(b64);
