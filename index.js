@@ -76,7 +76,7 @@ async function loadJSModule(url, def) {
 }
 
 async function loadInlineJSModule(script, doc, url) {
-    if (!(typeof(window._tempDocs) instanceof Map)) {
+    if (!(window._tempDocs instanceof Map)) {
         window._tempDocs = new Map();
     }
 
@@ -195,31 +195,29 @@ class UseModuleElement extends HTMLElement {
         super();
     }
 
-    connectedCallback() {
-        (async () => {
-            if (!this.success && !this.loading) {
-                this.loading = true;
+    async connectedCallback() {
+        if (!this.success && !this.loading) {
+            this.loading = true;
 
-                if (this.parentElement !== document.head) {
-                    document.head.appendChild(this);
-                }
-
-                const src = this.getAttribute("src");
-                const as = this.getAttribute("as");
-                let def = this.getAttribute("default") || "";
-
-                def = def.trim().toLowerCase() !== "no" && def.trim().toLowerCase() !== "false";
-                
-                if (as) {
-                    window[as] = await use(src, { base: document.baseURI, default: def });
-                } else {
-                    await use(src, { base: document.baseURI, default: def });
-                }
-
-                this.success = true;
-                this.loading = false;
+            if (this.parentElement !== document.head) {
+                document.head.appendChild(this);
             }
-        })();
+
+            const src = this.getAttribute("src");
+            const as = this.getAttribute("as");
+            let def = this.getAttribute("default") || "";
+
+            def = def.trim().toLowerCase() !== "no" && def.trim().toLowerCase() !== "false";
+            
+            if (as) {
+                window[as] = await use(src, { base: document.baseURI, default: def });
+            } else {
+                await use(src, { base: document.baseURI, default: def });
+            }
+
+            this.success = true;
+            this.loading = false;
+        }
     }
 }
 
