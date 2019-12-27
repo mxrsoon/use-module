@@ -17,6 +17,13 @@ function replaceNextString(str, oldStr, newStr, start = 0) {
     return str.substring(0, idx) + newStr + str.substring(idx + oldStr.length);
 }
 
+function b64EncodeUnicode(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+    }));
+}
+
 function resolveHTMLUrls(doc, baseUrl) {
     for (let attr of urlAttributes) {
         for (let el of doc.querySelectorAll(`[${attr}]`)) {
@@ -90,7 +97,7 @@ async function loadInlineJSModule(script, doc, url) {
                 import.meta.url = decodeURI("${encodedUrl}");
                 ${moduleJS}`;
 
-    const b64 = "data:text/javascript;base64," + btoa(js);
+    const b64 = "data:text/javascript;base64," + b64EncodeUnicode(js);
     const exports = await import(b64);
 
     if (window._tempDocs.size === 0) {
