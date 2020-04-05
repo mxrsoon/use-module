@@ -210,16 +210,25 @@ class UseModuleElement extends HTMLElement {
                 document.head.appendChild(this);
             }
 
+            let exports;
+
             const src = this.getAttribute("src");
             const as = this.getAttribute("as");
             let def = this.getAttribute("default") || "";
+            let adopt = this.getAttribute("adopt") || "";
 
             def = def.trim().toLowerCase() !== "no" && def.trim().toLowerCase() !== "false";
+            adopt = adopt.trim().toLowerCase() !== "no" && adopt.trim().toLowerCase() !== "false";
             
+            const exports = await use(src, { base: document.baseURI, default: def });
+
             if (as) {
-                window[as] = await use(src, { base: document.baseURI, default: def });
-            } else {
-                await use(src, { base: document.baseURI, default: def });
+                window[as] = exports;
+            }
+
+            if (adopt && exports instanceof CSSStyleSheet) {
+                const root = this.getRootNode();
+                root.adoptedStyleSheets = [...root.adoptedStyleSheets, exports];
             }
 
             this.success = true;
