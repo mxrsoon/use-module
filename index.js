@@ -206,10 +206,6 @@ class UseModuleElement extends HTMLElement {
         if (!this.success && !this.loading) {
             this.loading = true;
 
-            if (this.parentElement !== document.head) {
-                document.head.appendChild(this);
-            }
-
             const src = this.getAttribute("src");
             const as = this.getAttribute("as");
             let def = this.getAttribute("default") || "";
