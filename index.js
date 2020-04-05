@@ -210,8 +210,6 @@ class UseModuleElement extends HTMLElement {
                 document.head.appendChild(this);
             }
 
-            let exports;
-
             const src = this.getAttribute("src");
             const as = this.getAttribute("as");
             let def = this.getAttribute("default") || "";
