@@ -4,7 +4,7 @@
 This module enables you to import JS (ES6), CSS and HTML modules on almost any browser that supports ES6 modules.
 
 ## Setup
-To add use-module to your project, just download `use-module.js` from the [releases page](https://github.com/wazybr/use-module/releases), and place it in your project's folder.
+To add use-module to your project, just download `use-module.js` from the [releases page](https://github.com/mxrsoon/use-module/releases), and place it in your project's folder.
 
 After that, import it as a normal ES6 module in your HTML:
 
